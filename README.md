@@ -14,7 +14,7 @@ interactive access to project information and work package data.
 ## OSIRIS
 
 - [OSIRIS website](https://osiris4r.eu/)
-- [OSF project](YOUR-OSF-LINK)
+- [OSF project](https://osf.io/8nyke/overview)
 
 ## Technology
 
