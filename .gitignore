@@ -1,4 +1,7 @@
 .streamlit/secrets.toml
 *.xlsx
 *.csv
+*.docx
+*.pptx
+*.pdf
 __pycache__/
