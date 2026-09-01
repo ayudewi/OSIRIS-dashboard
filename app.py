@@ -2,7 +2,11 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import random
+import gdown
+import io
 from pathlib import Path
+
+GOOGLE_DRIVE_FOLDER_ID = st.secrets["google_drive_folder_id"]
 
 
 # =========================================================
@@ -284,13 +288,34 @@ st.markdown("""
 
 
 # =========================================================
+# LOAD DATA FROM GOOGLE DRIVE
+# =========================================================
+
+@st.cache_data
+def load_drive_folder():
+
+    output_dir = "google_drive_data"
+
+    gdown.download_folder(
+        id=GOOGLE_DRIVE_FOLDER_ID,
+        output=output_dir,
+        quiet=True,
+        use_cookies=False
+    )
+
+    return Path(output_dir)
+
+
+# =========================================================
 # LOAD SUMMARY
 # =========================================================
 
 @st.cache_data
-def load_summary(file_modified):
+def load_summary():
 
-    file_path = BASE_DIR / "OSIRIS_Audit_Summary.xlsx"
+    folder = load_drive_folder()
+
+    file_path = folder / "OSIRIS_Audit_Summary.xlsx"
 
     return pd.read_excel(
         file_path,
@@ -305,11 +330,12 @@ def load_summary(file_modified):
 @st.cache_data
 def load_work_package(
     file_name,
-    sheet_name,
-    file_modified
+    sheet_name
 ):
 
-    file_path = BASE_DIR / file_name
+    folder = load_drive_folder()
+
+    file_path = folder / file_name
 
     return pd.read_excel(
         file_path,
@@ -579,9 +605,7 @@ page = st.session_state.page
 
 if page == "Summary":
 
-    summary_path = BASE_DIR / "OSIRIS_Audit_Summary.xlsx"
-
-    df = load_summary(summary_path.stat().st_mtime)
+    df = load_summary()
 
 
     # -----------------------------------------------------
@@ -1217,12 +1241,12 @@ elif page.startswith("Work package"):
         },
 
         "4": {
-            "file": "OSIRIS_Audit_WP4_2006.xlsx",
+            "file": "OSIRIS_Audit_WP4_2026.xlsx",
             "sheet": "WP4"
         },
 
         "5": {
-            "file": "OSIRIS_Audit_WP5_2006.xlsx",
+            "file": "OSIRIS_Audit_WP5_2026.xlsx",
             "sheet": "WP5"
         }
 
@@ -1257,47 +1281,43 @@ elif page.startswith("Work package"):
 
     try:
 
-        file_path = BASE_DIR / selected["file"]
-
         wp_df = load_work_package(
-            selected["file"],
-            selected["sheet"],
-            file_path.stat().st_mtime
-        )
+        selected["file"],
+        selected["sheet"]
+    )
 
     except Exception as e:
 
         st.error(
-            f"Could not load Work Package {wp_number}."
-        )
+        f"Could not load Work Package {wp_number}."
+    )
 
         st.code(str(e))
 
         st.stop()
+
 
     # -----------------------------------------------------
     # SEARCH + DOWNLOAD
     # -----------------------------------------------------
 
     search_col, spacer, download_col = st.columns(
-        [4, 1, 1]
-    )
+    [4, 1, 1]
+)
 
 
     with search_col:
 
         search = st.text_input(
-            "🔍 Search",
-            placeholder="Search the table...",
-            label_visibility="collapsed"
-        )
+        "🔍 Search",
+        placeholder="Search the table...",
+        label_visibility="collapsed"
+    )
 
 
     with download_col:
 
-        import io
-
-    xlsx_data = io.BytesIO()
+        xlsx_data = io.BytesIO()
 
     with pd.ExcelWriter(xlsx_data, engine="openpyxl") as writer:
         wp_df.to_excel(
