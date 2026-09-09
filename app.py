@@ -310,7 +310,6 @@ def load_drive_folder():
 # LOAD SUMMARY
 # =========================================================
 
-@st.cache_data
 def load_summary():
 
     folder = load_drive_folder()
@@ -327,7 +326,6 @@ def load_summary():
 # LOAD WORK PACKAGE
 # =========================================================
 
-@st.cache_data
 def load_work_package(
     file_name,
     sheet_name
