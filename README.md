@@ -30,4 +30,4 @@ The dashboard is built with:
 ## Data
 
 The dashboard retrieves its data from the project's shared data source.
-Access credentials and secrets are not stored in this repository
+Access credentials and secrets are not stored in this repository. Each workpackage dataset can be downloaded from the dashboard.
