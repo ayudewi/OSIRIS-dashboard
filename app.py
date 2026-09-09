@@ -291,7 +291,6 @@ st.markdown("""
 # LOAD DATA FROM GOOGLE DRIVE
 # =========================================================
 
-@st.cache_data
 def load_drive_folder():
 
     output_dir = "google_drive_data"
